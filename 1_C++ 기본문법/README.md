@@ -98,3 +98,70 @@ int main(){
   std::println("a = {}, b = {}", a, b);
 }
 ```
+
+# 3. variable (변수)
+
+### 1) auto , decltype
+
+ > `auto` : 변수 선언시, **우변의 표현식을 조사**하여 컴파일러가 타입을 결정
+
+ > `decltype` : **괄호 안의 표현식**으로 타입을 결정 (함수 템플릿 등을 만들 때 주로 사용)
+```cpp
+int n = 10;
+decltype(n) n1; // int n1;
+```
+
+```cpp
+int x[5] = {1, 2, 3, 4, 5};
+
+auto a = x; // int* a = x; 
+// not int a[5] = x;
+
+decltype(x) d; // int d[5];
+decltype(x) d1 = x; // error
+```
+
+> type deduction (inference)
+: 주어진 **표현식을 보고 컴파일러가 타입을 결정**하는 과정
+
+### 2) `using`
+- `typedef` : type에 대한 별칭
+- `using` : type에 대한 별칭 + **template에 대한 별칭**
+
+```cpp
+using DWORD = int; // typedef int DWORD;
+using PF = void(*)(int); // typedef void(*PF)(int);
+
+DWORD n; // int n
+PF p; // void(*p)(int)
+```
+
+### 3) Uniform Initialization (일관된 초기화)
+- 모든 종류의 변수를 한가지 방법으로 초기화
+- 중괄호 초기화(brace-init) 이라고도 부름
+- Direct Initialization(직접 초기화) : `=` 없이 초기화 하는 것
+- Copy Initialization(복사 초기화) : `=`을 사용해서 초기화 하는 것
+
+```cpp
+// Direct Initialization
+int   x3[3]{1,2,3};
+
+// Copy Initialization
+int   x2[3] = {1,2,3};
+```
+
+### 4) C와 다른 C++ 구조체
+- 구조체 멤버에 디폴트 초기값 지정 가능
+- 구조체 변수 선언시 `struct` 키워드를 표기하지 않아도 됨
+- 아래와 같이 요소의 값을 한줄에 꺼낼 수 있음
+```cpp
+auto [x, y] = pos1
+
+int arr[3] = {1,2,3};
+auto [a, b, c] = arr;
+```
+
+### 5) C++ 타입/변수 특징
+- `0b` : 2진수 표기
+- `0x` : 16진수 표기
+- `nullptr` 로 포인터 초기화 (C++11 부터!)
