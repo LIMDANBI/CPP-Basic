@@ -103,7 +103,7 @@ int main(){
 
 ### 1) auto , decltype
 
- > `auto` : 변수 선언시, **우변의 표현식을 조사**하여 컴파일러가 타입을 결정
+ > `auto` : 변수 선언시, **우변의 표현식을 조사**하여 컴파일러가 타입을 결정 (초기값 주지 않으면 error)
 
  > `decltype` : **괄호 안의 표현식**으로 타입을 결정 (함수 템플릿 등을 만들 때 주로 사용)
 ```cpp
@@ -165,3 +165,178 @@ auto [a, b, c] = arr;
 - `0b` : 2진수 표기
 - `0x` : 16진수 표기
 - `nullptr` 로 포인터 초기화 (C++11 부터!)
+
+# 4. function (함수)
+
+### 1) default parameter 
+- 함수 호출시 인자를 전달하지 않으면, 미리 지정된 인자값을 사용
+- 함수의 마지막 인자부터 차례대로 디폴트 값을 지정 해야 함
+- 함수를 선언과 구현으로 분리할 때는 **함수 선언부에만 티폴트 값을 표기**해야함
+- 컴파일러가 컴파일 시에 함수 호출하는 코드의 함수 인자에 디폴트 값을 채워 주는 방식으로 동작
+
+### 2) overloading
+- 인자의 개수나 인자의 타입이 다르면, 동일한 이름의 함수를 여러 개 만들 수 있음 (반환 타입만 다르면 x)
+- default parameter가 있는 경우는 주의! (함수 호출 시 컴파일러가 함수 인자로 보고 어느 함수가 호출될지 명확히 결정할 수 있어야 함)
+- 컴파일러가 컴파일 시간에 함수의 이름을 변경하는 방식으로 동작 (`name mangling`)
+> ex) `A`라는 이름의 함수를 C로 컴파일 시 `A` 그대로, C++로 컴파일 시 `_Z6Ai`와 같이 이름 변경
+
+### 3) C/C++ 호환성 문제
+- 파일별로 각각 컴파일 후, 생성된 `.o`(`.obj`) 파일을 링커가 결합
+- cl, gcc 등의 컴파일러는 **확장자에 따라 언어를 결정**
+- overloading의 원리인 `name mangling` 때문에 C/C++ 호환성 문제 발생 
+- `extern "C"` : 함수(변수)가 C언어로 작성된 것임을 C++ 컴파일러에게 알려줄 때 사용 (name mangling 발생 방지)
+- C 컴파일러는 `extern "C"`를 알지 못함 > 하나의 헤더 파일을  C/C++에서 모두 사용하려면 아래와 같이 **조건부 컴파일**을 해야함.
+
+```h
+#pragma once 
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+	int square(int);
+
+#ifdef __cplusplus
+}
+#endif
+```
+
+### 4) template
+- 함수 오버로딩 시, 인자 타입과 반환 타입만 다르고, **구현이 동일(유사)한 함수를 여러개 만들어야 한다는 단점**이 존재
+- 구현이 동일(유사)한 함수가 여러 개 필요하면 함수를 만들지 말고 함수를 생성하는 틀(템플릿)을 만들 수 있음
+- template을 사용해서 컴파일러가 실제 함수를 생성하는 과정을 **template instantiation (템플릿 인스턴스화)** 라고 부름
+- 함수 템플릿을 만들고 사용하지 않으면, 실제 함수는 생성(인스턴스화) 되지 않음 !!
+
+```cpp
+//template<typename T> 
+template<class T> // 위와 완전히 동일
+T square(T a)
+{
+	return a * a;
+}
+
+int main()
+{
+	square<int>(3);
+	square<double>(3.4);
+
+  // type deduction
+  // 컴파일러가 함수 인자를 보고 타입을 추론
+  square(3);
+  square(3.4f);
+
+  // 함수와 함수 템플릿
+  printf("%p\n", &square); // error (square는 함수가 아닌 틀. 주소를 구할 수 없음)
+  printf("%p\n", &square<int>); // ok (함수. 주소를 구할 수 있음)
+}
+```
+
+> \* `코드 폭발(Code Bloat)` : 템플릿이 너무 많은 타입에 대해 인스턴스화 되어서 코드 메모리가 증가하는 현상
+
+### 5) inline function
+- 빠르다는 장점이 있지만, 크기가 큰 함수를 여러 번 치환하면 목적코드(실행 파일)이 커질 수 있음
+- 크기가 작은 함수는 인라인 치환시 목적코드를 줄이기도 함
+- 인라인 치환을 적용 하려면 `/Ob1` 옵션 사용
+
+|||
+|--|--|
+|일반 함수 호출 | 함수인자를 약속된 장소에 넣고(`32bit-stack`/`64bit-register`), 함수로 이동
+|인라인 함수 호출 | 함수 호출 코드를 함수의 기계어 코드로 치환
+
+```cpp
+inline int Add(int a, int b){
+  return a + b;
+}
+```
+
+### 6) linkage (연결)
+- 인라인함수와 함수템플릿은 **함수 구현 자체를 헤더 파일**에 넣어야 함!!
+- 어느 파일이 먼저 컴파일 될 지 알수 없기 때문에, 함수의 구현을 알 수 없을 수 있음  ex) test.h , test.cpp , using_test.cpp 
+
+|||
+|----|-----|
+|internal linkage|심볼(함수, 변수이름)이 선언된 같은 컴파일 단위에서만 사용 가능 (인라인 함수, 템플릿)|
+|external linkage|프로젝트 내의 모든 컴파일 단위애서 사용 가능 (일반 함수, 전역 변수 등)|
+
+### 7) suffix return type (후위 반환 타입)
+- 함수의 반환 타입을 함수의() 뒤쪽에 적는 표기법
+- 후위 반환 타입 표기법이 반드시 필요한 경우가 있음
+  - 복잡한 형태의 함수 템플릿
+  - 람다 표현식
+
+```cpp
+auto add(int a, int b) -> int {
+  return a + b;
+}
+```
+
+```cpp
+// error 
+// 모든 변수는 선언 후에 사용되어야 함
+template<class T1, class T2>
+decltype(a+b) add(T1 a, T2 b){
+  return a + b;
+}
+
+// suffixt return type
+template<class T1, class T2>
+auto add(T1 a, T2 b) -> decltype(a + b)
+
+// C++14부터 지원
+auto add(T1 a, T2 b){
+  return a + b;
+}
+```
+
+### 8) delete function
+- class 문법에는 사용자가 만들지 않으면 컴파일러가 자동으로 생성하는 함수가 있음
+- 컴파일러에게 자동 생성하는 함수를 만들지 못하게 하고 싶을 때 주로 사용
+
+```cpp
+int gcd(int a, int b)
+{
+	return b != 0 ? gcd(b, a % b) : a;
+}
+
+//double gcd(double a, double b); // 구현이 없다. 선언만
+
+double gcd(double a, double b) = delete; // C++, 함수 삭제
+
+int main()
+{
+	gcd(10, 4);
+
+	gcd(3.3, 4.4); // 암시적 형 변환으로 gdc(int, int) 호출 될 수 있음 -> delete
+}
+```
+
+### 9) C++ STL(Standard Library)
+- `iterator` : 요소를 가리키는 포인터 역할의 객체(변수)
+
+### 10) lambda expression
+- 익명의 함수(객체)를 만드는 문법
+- 함수이름(주소)가 필요한 위치에 함수 구현자체를 표기할 수 있는 문법
+- 후위 반환 표기법(suffix return type) 사용, 컴파일러가 리턴 타입을 추로 할 수 있는 경우 생략 가능
+- auto 변수에 담아서 함수처럼 사용 가능
+- **람다 표현식을 사용하는 이유** :  특정 상황에서 일반 함수보다 빠르고, 지역변수를 캡쳐할 수 있는 능력이 있음 
+- `[]` 기호 : 람다표현식이 시작됨을 알리는 lambda introducer
+- `std::for_each` : 구간의 모든 요소를 마지막 인자로 전달된 "단항함수에 차례대로 전달"
+  - 단항 함수 : 인자 1개
+  - 이항 함수 : 인자 2개
+
+```cpp
+int x[5] = {1, 2, 3, 4, 5};
+std::sort(x, x+5, [](int a, int b) ->  bool {return a>b;});
+std::sort(x, x+5, [](int a, int b){return a>b;}); // return type 생략
+
+auto add = [](int a, int b){return a+b;};
+int ret = add(1, 2);
+
+// 지역 변수 캡쳐
+int pass = 70;
+int score[5] = {95,35, 63, 72. 22};
+for_each(score, score+5, [pass](int n){
+  if(n < pass) cout << n << "\n";
+})
+```
+
