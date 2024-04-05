@@ -404,3 +404,44 @@ bool res = (n1 <=> n2);
 std::cout<< typeid(ret).name() << std::endl; // strong_ordering
 ```
 
+# 6. reference
+- 이미 존재하는 변수(메모리)에 대한 추가적인 `별칭(alias)`을 부여 하는 분법
+- `&` 연산자
+  - 변수의 **주소를 구할** 때
+  - 레퍼런스 변수를 **선언**할 때 
+```cpp
+int n = 10;
+int* p = &n; // pointer
+int& r = n; // reference
+```
+
+- 함수 인자로 reference를 사용하면 포인터보다 간결하고 안전하게 코드를 작성할 수 있음 
+
+```cpp
+int* p =  0; // null 포인터 있음
+int & r; // error (null 참조 없음)
+```
+
+- `scanf("%d", &n);` : call by pointer
+- `std::cin >> n;` : call by reference
+- `const reference`
+  - 복사본에 대한 오버헤드 없이 인자로 전달된 변수를 수정하지 않겠다는 약속
+  - C++에서 가장 널리 사용되는 인자 전달 방식
+
+```cpp
+struct Rect
+{
+	int left;
+	int top;
+	int right;
+	int bottom;
+};
+
+void f1(Rect r)        {}
+void f2(const Rect& r) {} // 좋은 코드 
+
+void f3(int n)        {} // 좋은 코드
+void f4(const int& r) {}
+```
+- user define type의 경우, 일반적으로 타입의 크기가 크므로 call by reference 추천
+- primitive type의 경우, 타입의 크기가 크지 않고 생성자 개념이 없으므로 call by value 추천
