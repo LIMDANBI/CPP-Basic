@@ -340,3 +340,67 @@ for_each(score, score+5, [pass](int n){
 })
 ```
 
+# 5.연산자와 제어문
+
+### 1) `range-for`문
+- C++11부터 지원되는 새로운 형태의 for문
+- 배열 뿐 아니라 다양한 STL 컨테이너에도 사용 가능
+
+```cpp
+for ( auto n : arr)
+```
+
+### 2) `std::views`
+- C++20부터 제공
+- `#include <ranges>`
+- `std::views` namespace 안에 다양한 함수 제공
+
+```cpp
+#include <ranges>
+
+for(auto a : std::views::reverse(arr)); // 거꾸로
+for(auto a : std::views::take(arr, 3)); // 처음 3개
+for(auto a : std::views::drop(arr, 3)); // 처음 3개 제외
+for(auto a : std::views::filter(arr, func)); // 특정 조건 만족
+```
+
+### 3) init if
+```cpp
+// 기존
+int ret = foo();
+if(ret == 0) {}
+
+// 이후
+if (init ret = foo(); ret == 0){}
+```
+
+### 4) new
+- 배열 형태로 메모리 할당한 경우 반드시 `delete[]` 로 해야 함
+- `delete`로 해지할 경우 undefined(미정의 동작) 발생
+
+| | C (malloc) | C++ (new) |
+|---|------|------|
+|정체| 함수 | 연산자 (키워드)
+|인자| 할당할 메모리 크기 | 타입
+|반환타입| `void*` (원하는 타임으로 캐스팅 필요) | 전달한 타입의 포인터 (캐스팅 필요 없음)
+|해지방법| `free` | `delete` 또는 `delete[]`
+|생성자| 호출 안됨 | 호출됨
+
+### 5) three way comparison
+- C++20부터 등장
+- 0과 크기 비교만 가능함 
+  - `0(같음)`
+  - `양수(좌측이큼)`
+  - `음수(우측이큼)`
+- 어떤 타입을 비교하는지에 따라 반환 타입이 달라짐
+  - strong_ordering
+  - weak_ordering
+  - partial_ordering
+
+```cpp
+bool res = (n1 <=> n2);
+
+// data type 출력
+std::cout<< typeid(ret).name() << std::endl; // strong_ordering
+```
+
