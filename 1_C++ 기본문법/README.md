@@ -463,3 +463,37 @@ void f4(const int& r) {}
 
 > \* 앞으로 포인터 변수를 초기화 할 때는 `0`을 사용하지 말고, `nullptr`을 사용하자!!
 
+# 8. explicit casting (명시적 캐스팅)
+- C의 경우 논리적으로 위험한 캐스팅 코드도 대부분 허용됨
+```cpp
+const int c = n;
+int* p3 = &c; // error
+int* p3 = (int*)&c; // ok
+*p3 = 20;
+```
+
+- C++ Ecplicit Csting
+: 용도에 맞게 사용하기 위해 4개의 캐스팅 방법 제공
+
+|||
+|-|-|
+|static_cast|논리적이고 이성적인 캐스팅|
+|reinterpret_cast|메모리의 재해석|
+|const_cast|상수성 제거|
+|dynamic_cast|상속 관계에서 안전한 Down Casting|
+
+```cpp
+const int c = 10;
+int* p1 = (int*)&c; // ok
+int* p2 = const_cast<int*>(&c); // ok
+int* p3 = static_cast<int*>(&c); // error
+
+int n = 10;
+char* p4 = static_cast<char*>(&n); // error
+char* p5 = reinterpret_cast<char*>(&n); // ok
+
+const int m = 10;
+char* p6 = (char*)&m;
+char* p7 = reinterpret_cast<char*>(const_cast<int*>(&m));
+char* p8 = const_cast<char*>( reinterpret_cast<const char*>(&m));
+```
