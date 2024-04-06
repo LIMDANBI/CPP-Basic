@@ -445,3 +445,21 @@ void f4(const int& r) {}
 ```
 - user define type의 경우, 일반적으로 타입의 크기가 크므로 call by reference 추천
 - primitive type의 경우, 타입의 크기가 크지 않고 생성자 개념이 없으므로 call by value 추천
+
+# 7. `nullptr`
+- `null pointer`를 나타내는 literal, keyword
+- 모든 타입의 포인터 변수를 초기화 하는 데 사용 가능
+- 정수(실수) 초기화에 사용될 수는 없음
+- bool 변수 직접 초기화와 조건문에 사용될 수 있음
+- 모든 literal은 타입이 있음
+- `std::nullptr_t`은 모든 타입의 포인터로 암시적 형변환 됨
+
+||||
+|-|-|-|
+|`0`|정수형 리터럴|int|
+|`0.0`|실수형 리터럴|double|
+|`false`|bool형 리터럴(키워드)|bool|
+|`nullptr`|포인터형 리터럴(키워드)|`std::nullptr_t`|
+
+> \* 앞으로 포인터 변수를 초기화 할 때는 `0`을 사용하지 말고, `nullptr`을 사용하자!!
+
