@@ -43,8 +43,8 @@
 - 사용법은 배열과 거의 동일함
 
 # 3. member initializer list
-- 생성자에서 멤버 데이터를 초기화 할 때는 "멤버 초기화 리스트(member initialize list)"를 사용하는 것이 좋음
-- 반드시 member initialize list를 사용해야 하는 경우
+- 생성자에서 멤버 데이터를 초기화 할 때는 "멤버 초기화 리스트(member initializer list)"를 사용하는 것이 좋음
+- 반드시 member initializer list를 사용해야 하는 경우
     - 멤버 데이터로 **상수나 참조자가 있는 경우** (반드시 초기화 되어야 함)
     - **디폴트 생성자가 없는 타입이 멤버로 있는 경우**
 
