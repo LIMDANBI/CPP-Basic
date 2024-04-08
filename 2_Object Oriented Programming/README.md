@@ -41,3 +41,69 @@
 - Standard Template Library
 - 크기 변경이 가능한 동적 배열
 - 사용법은 배열과 거의 동일함
+
+# 3. member initializer list
+- 생성자에서 멤버 데이터를 초기화 할 때는 "멤버 초기화 리스트(member initialize list)"를 사용하는 것이 좋음
+- 반드시 member initialize list를 사용해야 하는 경우
+    - 멤버 데이터로 **상수나 참조자가 있는 경우** (반드시 초기화 되어야 함)
+    - **디폴트 생성자가 없는 타입이 멤버로 있는 경우**
+
+```cpp
+class People
+{
+    std::string name;
+    int age;
+public:
+    People(const std::string& s, int a) : name{s}, age{a} // 이렇게 초기화 하자!!
+    {
+        // 이렇게 하지말고,
+        name = s; // 초기화가 아니라 대입 ..!!
+        age = a;
+    }
+}
+```
+- 초기화 코드가 놓인 순서가 아니라, 멤버 데이터가 선언된 순서 대로 초기화 됨!!!
+```cpp
+class Point
+{
+public:
+//	int x;
+	int y;
+	int x;
+
+	Point() : y{10}, x{y}
+	{
+	}
+};
+```
+- 선언과 구현 파일로 나누어 클래스를 작성할 때, 멤버 초기화 리스트는 **구현 파일**에 작성
+- 생성자 블록 안에서는 멤버에 접근하려면 `this->멤버이름`을 사용해야 함 (멤버 초기화 리스트의 경우는 필요 없음)
+- (참고) 컴파일러의 멤버 초기화 리스트를 해석
+```cpp
+#include <iostream>
+
+int g = 0;
+
+class Point
+{
+public:
+//	int x{0}; // int x = 0;
+	int x{++g};
+	int y{0};
+
+	Point() {}
+	Point(int a)        : x{a} {}
+	Point(int a, int b) : x{a}, y{b} {}
+};
+
+int main()
+{
+	Point pt1;     // 0, 0
+	Point pt2(1);  // 1, 0
+
+	std::cout << pt1.x << ", " << pt1.y << std::endl;
+	std::cout << pt2.x << ", " << pt2.y << std::endl;
+
+	std::cout << g << std::endl; // 1
+}
+```
