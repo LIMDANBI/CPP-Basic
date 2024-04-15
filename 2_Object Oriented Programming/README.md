@@ -107,3 +107,20 @@ int main()
 	std::cout << g << std::endl; // 1
 }
 ```
+
+# 4. explicit constructor
+- Dircet Initialization만 가능하고, Copy Initialization(`=` 사용)은 사용할 수 없음
+- "암시적 변환의 용도로 사용될 수 없다" (명시적 변환은 사용가능) = 말이 안되는 코드가 에러가 나도록!!
+- 인자의 개수가 없거나 여러 개인 경우도 `explicit`를 붙일 수 있음
+- `explicit(bool)` : C++20에서 추가된 문법, 주로 클래스 템플릿을 만들 때 템플릿 인자에 따라서 explicit 여부를 결정하기 위해 사용함
+
+```cpp
+class Vector
+{
+public:
+	explicit Vector(int size){}
+};
+
+Vector v1(10);   // ok
+Vector v2 = 10;  // error
+```
