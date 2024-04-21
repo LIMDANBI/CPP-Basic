@@ -125,7 +125,8 @@ Vector v1(10);   // ok
 Vector v2 = 10;  // error
 ```
 
-# 5. static member data
+# 5. static member
+### 1)  static member data
 - 프로그램이 처음 시작될 때 (객체를 생성하지 않아도) 메모리에 놓이게 됨
 - 객체 생성시 static member data는 객체의 메모리에 포함되지 않음
 - 모든 객체가 하나의 static member data를 공유함 (접근 지정자를 사용할 수 있는 전역 변수 느낌)
@@ -145,4 +146,10 @@ struct Object
 	inline static int data5 = 0;
 };
 ```
+### 2) static member function
+- 객체 없이 호출 가능한 멤버 함수
+- 객체이름 또는 클래스이름으로 접근 가능 (클래스 이름으로 접근하는 것을 권장)
+- static 멤버 함수에서는 static 멤버(데이터, 함수)만 접근 할 수 있음
+- 외부 정의는 구현 파일에 만들어야 함
+- static 키워드는 함수 선언부에만 표기해야 함
 
