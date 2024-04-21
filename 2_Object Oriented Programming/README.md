@@ -255,4 +255,48 @@ int main()
 }
 ```
 
+# 9. copy constructor
+- 자신과 동일한 타입 한개를 인자로 가지는 생성자
+- 사용자가 복사 생성자를 만들지 않으면, 컴파일러가 디폴트 복사 생성자 제공 (모든 멤버를 복사)
 
+```cpp
+class Point
+{
+	int x;
+	int y;
+public:
+	Point()             : x{0}, y{0} {} // 1
+	Point(int a, int b) : x{a}, y{b} {} // 2
+};
+
+int main()
+{
+	Point p1;		// ok.
+	Point p2(1,2);	// ok
+//	Point p3(1);	// error. Point(int) 필요
+	Point p4(p2); 	// ok.    Point(Point)
+}
+```
+
+```cpp
+// 복사 생성자를 만드는 예시
+Point(const Point& p) : x{p.x}, y{p.y}
+{
+	std::cout << "copy ctor" << std::endl;
+}
+```
+
+- 복사 생성자가 호출되는 3가지 경우
+	1. 자신과 동일한 타입의 객체로 초기화 될 때 (`explicit`가 아닌 경우에만)
+	2. 함수 인자를 call by vaule로 받은 경우 (함수 인자를 const reference로 사용 하면 복사본을 만들지 않으므로 복사 생성자가 호출되지 않음)
+	3. 함수가 객체를 값으로 반환할 때 (참조로 반환하면 리턴용 임시객체가 생성되지 않음)
+
+- 디폴트 복사 생성자의 경우, 메모리를 자체를 복사하지 않고, 주소만 복사하는 `shallow copy` 문제가 있음
+- 이를 해결하기 위해서는 디폴트 복사 생성자를 사용하는 것이 아니라, 사용자가 직접 복사 생성자를 만들어야 함
+- 디폴트 복사 생성자의 해결책s
+	- 포인터를 제외한 모든 멤버를 복사 (포인터의 경우 새롭게 메모리 할당)
+	- `reference counting` (하나의 자원을 공유하지만, 몇개의 객첵가 자원을 사용하는지 개수를 관리하는 기법) 
+	- 복사 금지 (컴파일 에러가 나오도록 함) `Person(const Person& ) = delete`
+	- 문자열이 필요한 경우 STL의 string 클래스를 이용하자 
+
+> `reference counting` 의 경우 동일한 자원이 메모리에 여러번 놓이는 것을 방지할 수 있지만, 멀티 쓰레드 환경 / 공유하는 값이 자주 변경되는 경우에서는 오히려 불리할 수 있음
