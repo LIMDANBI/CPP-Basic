@@ -208,3 +208,51 @@ public:
 	int get() { return count;}
 };
 ```
+
+# 8. const member function
+- 멤버 함수의 괄호() 뒤쪽에 `const`를 붙이는 문법 (함수를 선언과 구현으로 분리할 경우 양쪽에 모두 붙여야 함)
+- 상수 멤버 함수에서는 "멤버의 값을 변경하지 않겠다"는 약속!! (모든 멤버는 상수로 취금됨)
+- 상수 객체는 상수 멤버함수만 호출할 수 있음
+- 객체의 상태를 변경하지 않는 모든 멤버 함수는 반드시 상수 멤버 함수로 만들어야 함
+- 동일 이름의 `상수 멤버 함수`와 `비상수 멤버 함수`를 동시에 만들 수 있음
+
+|||
+|-|-|
+|상수 객체| 상수 멤버 함수만 호출할 수 있음|
+|비상수 객체| 비 상수 멤버 함수를 호출 (비상수 멤버 함수가 없다면 상수 멤버 함수 호출) |
+
+
+> `mutable` 멤버 데이터 : 상수 멤버 함수에서도 값을 변경할 수 있음
+
+```cpp
+#include <iostream>
+
+class Rect
+{
+	int x, y, w, h;
+	mutable int cnt = 0;
+public:
+	Rect(int x, int y, int w, int h)
+		: x{x}, y{y}, w{w}, h{h} { } 
+
+	int getArea() const 
+	{
+//		static int cnt = 0;
+		++cnt;
+		std::cout << cnt << std::endl;
+		return w * h;
+	}
+};
+
+int main()
+{
+	Rect r1(1,1,10,10);
+	Rect r2(1,1,10,10);
+
+	r1.getArea(); // 1
+	r2.getArea(); // 1
+	r2.getArea(); // 2
+}
+```
+
+
