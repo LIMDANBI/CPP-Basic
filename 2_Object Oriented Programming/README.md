@@ -171,3 +171,40 @@ c.increment()->increment()->increment();
 // *this 반환
 c.decrement().decrement().decrement();
 ```
+
+# 7. reference return
+
+`temporary`
+- 함수가 객체를 값으로 반환하는 경우(return by value), 리턴용 임시객체(temporary)가 생성되어 반환됨
+- 함수를 호출하는 문장의 끝에서 파괴됨 (등호의 왼쪽에 놓일 수 없음)
+- 생성될 때 복사 생성자가 호출되고, 파괴될 때 소멸자가 호출됨
+- 지역 변수로 만들어진 객체는 절대 참조 반환하면 안됨
+
+```cpp
+Point pt = {1, 2};
+
+Point f1()  // return by value
+{
+	return pt; // 리턴용 임시 객체가 생성되어 반환됨
+}
+Point& f2() // return by reference
+{
+	return pt; // 리턴용 임시 객체가 생성되지 않음
+}
+```
+
+```cpp
+// 이해를 위한 예시
+class Counter
+{
+	int count{0};
+public:
+//	Counter increment() // no
+	Counter& increment() // ok
+	{
+		++count;
+		return *this;
+	}
+	int get() { return count;}
+};
+```
