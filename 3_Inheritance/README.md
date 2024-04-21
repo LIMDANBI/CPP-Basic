@@ -52,3 +52,35 @@ int main()
     derv.c = 10; // ok
 }
 ```
+
+# 2. upcasting
+- 기반 클래스 포인터로 파생 클래스의 객체를 가리킬 수 있음
+- 기반 클래스 포인터로는 기반 클래스의 멤버만 접근할 수 있음
+- 파생 클래스의 고유 멤버에 접근하려면 명시적으로 캐스팅 해야함
+- 동종을 처리하는 함수, 동종을 보관하는 컨테이너를 사용하는 경우 많이 활용됨
+
+```cpp
+class Shape
+{
+public:
+    int color;
+};
+
+class Rect : public Shape
+{
+public:
+    int x, y, w, h;
+};
+
+int main()
+{
+    Rect rect;
+
+    Shape* p = &rect; 
+    
+    p->color = 0; // ok
+    p->x = 0;     // error
+    static_cast<Rect*>(p)->x = 0; // ok
+    
+}
+```
