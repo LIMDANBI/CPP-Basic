@@ -123,3 +123,34 @@ Rect r;  r.Draw(); // Rect::Draw
 Shape* p = &r;     //
 p->Draw();         // Shape::Draw
 ```
+
+### 4) virtual destructor
+- 가상 함수를 재정의 할 때는 `virtual`을 붙여도 되고, 붙이지 않아도 되지만, 가독성을 위해 붙이는게 좋음  
+- 가상 클래스의 소멸자는 반드시 가상 함수가 되어야 함 (단, 의도적으로 하지 않는 경우도 있음)
+- 가상 함수 재정의 시 `override`를 붙이는 것이 안전함 (함수 이름에 오타가 있어도, 새로운 것을 정의한다고 생각하여 에러가 발생하지 않으므로)
+
+```cpp
+Base *p = new Derived;
+delete p; // Base 소멸자 호출
+// 포인터 타입이 아닌 p가 가리키는 메모리를 조사 후 호출해야 함 
+// 따라서, 기반 클래스의 소멸자를 가상함수로!!
+```
+
+```cpp
+void foo(Shape* p, Shape& 1, Shape s){
+    p-›draw(); // draw rect 
+    r.draw(); // draw rect 
+    s.draw(); // draw shape (복사본 객체가 생성되었으므로)
+}
+
+int main(){
+    Rect r;
+    foo(&r, r, r);
+}
+```
+
+```cpp
+// Rect , Circle이 Shpae을 상속 받은 경우
+vector<Shape*> v1; // Rect, Circle을 보관하는 벡터
+vector<Shape> v2; // Rect, Circle이 아닌, Shape을 보과하는 벡터
+```
