@@ -84,3 +84,42 @@ int main()
     
 }
 ```
+
+# 3. virtual function
+
+### 1) `override` 
+기반 클래스 멤버 함수를 파생 클래스에서 다시 만드는 것
+
+### 2) `함수 바인딩(function binding)` 
+`p->cry()` 표현식을 "어느 함수와 연결"할지를 결정하는 과정
+
+1) static binding (early binding)
+    - 컴파일러가 "컴파일 시간에 함수 호출"을 결정
+    - 컴파일러는 p가 실제로 어느 객체를 가리키는지는 컴파일 시간에 알 수 없음
+    - **따라서, 포인터 타입만을 가지고 함수 호출을 결정**
+    - C++, C# (의 non virtual function)
+    - 빠르지만, 논리적이지 않음
+
+2) dynamic binding (late binding)
+    - 컴파일 시간에 p가 가리키는 곳을 조사하는 기계어 코드를 생성
+    - "실행 시간에 p가 가리키는 곳을 조사 후 실제 메모리에 있는 객체에 따라 함수 호출 결정"
+    - Java, python 등 대부분의 객체 지향 언어 
+    - C++, C#의 virtual function 
+    - 느리지만, 논리적임
+
+### 3) virtual function
+- 함수 선언부에 `virtual`이 붙은 함수로, 함수 바인딩 시 dynamic binding을 지원함
+- ex) `virtual void Draw()`
+
+> 모든 파생클래스의 공통의 특징은 반드시 기반 클래스에도 있어야 한다
+(그래야 기반 클래스 포인터 타입으로 객체를 관리할 때, 해당 특징을 사용할 수 있다.)
+
+> 기반 클래스 함수 중 파생클래스가 재정의하게 되는 함수는 반드시 "가상함수로 만들어야" 한다.
+
+```cpp
+Shape s; s.Draw(); // Shape::Draw
+Rect r;  r.Draw(); // Rect::Draw
+
+Shape* p = &r;     //
+p->Draw();         // Shape::Draw
+```
