@@ -124,3 +124,25 @@ public:
 Vector v1(10);   // ok
 Vector v2 = 10;  // error
 ```
+
+# 5. static member data
+- 프로그램이 처음 시작될 때 (객체를 생성하지 않아도) 메모리에 놓이게 됨
+- 객체 생성시 static member data는 객체의 메모리에 포함되지 않음
+- 모든 객체가 하나의 static member data를 공유함 (접근 지정자를 사용할 수 있는 전역 변수 느낌)
+- `클래스 이름::static멤버이름` 으로 접근 (객체 이름으로 접근하는 것은 가능하지만 권장 x)
+- private 영역에 있는 경우, `static 멤버함수`로 접근
+- static 멤버 변수의 외부 선언은 구현파일(`.cpp`)에 있어야 함
+- 다음의 경우에는 외부 선언 없이 클래스 내부에서 초기화 가능
+```cpp
+struct Object
+{
+//	static int data1 = 0; // error
+	static int data2;     // ok
+
+	static const int data3 = 0;     // ok
+	static constexpr int data4 = 0; // ok
+		
+	inline static int data5 = 0;
+};
+```
+
