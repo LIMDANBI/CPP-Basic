@@ -193,3 +193,54 @@ vector<Shape> v2; // Rect, Circle이 아닌, Shape을 보과하는 벡터
 - 가상함수가 선언된 순서를 가지고 검색하며, 가상 함수 호출 시 주소를 꺼내서 호출하므로 약간의 지연이 발생함
 - 인라인 치환은 컴파일 타임에 결정 되고, 어느 가상함수를 사용할지는 실행 시간에 결정되므로 인라인 치환이 될 수 없음
 - 디폴트 파라미터는 컴파일 시간에 값을 채우므로 가상함수 override 시에는 절대 디폴트 값을 변경하면 안됨 (가상함수에서는 디폴트 파라미터를 사용하지 않는 것이 좋음)
+
+# 7. RTTI (Run Time Type Information)
+- 실행 시간에 객체의 타입을 조사하는 기술
+- 특정 조건에서는 컴파일 시간에도 조사 가능
+- `#include <typeinfo>` 헤더 사용
+- `typeid()` 연산자를 사용해서, `const std::type_info&` 형태로 얻을 수 있음
+- `const std::type_info&` 의 경우 사용자가 직접 객체를 만들 수는 없고, const 형태의 반환값으로 참조만 가능
+- `const std::type_info&` 객체의 `name()` 멤버함수 사용
+- 아래와 같은 식으로 타입 조사
+    - `typeid(n1)`
+    - `typeid(int)`
+    - `typeid(3+4.2)`
+
+
+```cpp
+#include <iostream>
+#include <typeinfo>
+
+int main()
+{
+    auto n1 = 10;
+    
+    const std::type_info& t1 = typeid(n1);
+    const std::type_info& t2 = typeid(int);
+    
+    if ( t1 == t2 ) // if(typeid(n1) == typeid(int)) 도 가능
+    {
+        std::cout << "same" << std::endl;
+    }
+    
+    if ( t1.hash_code() == t2.hash_code() )
+    {
+        std::cout << "same" << std::endl;
+    }
+    
+    std::cout << t1.name() << std::endl;
+}
+```
+
+`downcsting`
+- 기반 클래스 포인터를 파생 클래스 타입으로 캐스팅 하는 것
+- 안전하지 않을 수 있음
+
+`static_cast`
+- 잘못된 downcasting을 조사 할 수 없음
+- 단, 컴파일 시간에 캐스팅을 수행하므로 오버헤드가 없음
+
+`dynamic_cast`
+- 잘못된 downcasting을 하면 0 반환 
+- 실행시간에 캐스팅을 수행하므로 약간의 오버헤드가 있음
+- 반드시 하나 이상의 가상 함수를 가져야 사용할 수 있음
