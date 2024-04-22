@@ -205,7 +205,8 @@ vector<Shape> v2; // Rect, Circle이 아닌, Shape을 보과하는 벡터
     - `typeid(n1)`
     - `typeid(int)`
     - `typeid(3+4.2)`
-
+- 가상 함수가 없는 경우 (non-polymorphic type) 컴파일 시간에 타입 결정
+- 가상 함수가 있는 경우 (polymorphic type) 실행시간에 메모리를 조사해서 결정
 
 ```cpp
 #include <iostream>
