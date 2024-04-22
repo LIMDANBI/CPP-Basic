@@ -1,0 +1,125 @@
+# 1. Operator overloading
+사용자 정의 타입의 객체에 대해서도 `+`, `-` 등의 연산자를 사용할 수 있게 하는 문법
+
+### 1) a + b를 컴파일러가 해석하는 방법
+- a, b가 모두 `primitive type`(int, double 등)인 경우, 미리 정해진 방식으로 덧셈 수행
+- a, b 중 한 개라도 `사용자 정의타입`이 있는 경우, `operator+`라는 이름을 가진 약속된 함수를 호출하고, 없는 경우, + 연산을 할 수 없다는 에러 발생
+
+### 2) `operator+`를 만드는 2가지 방법
+
+1. 멤버가 아닌 함수로 구현 `operator+(p1, p2)`
+    - 멤버가 아닌 함수에서 멤버 데이터인 x, y에 접근하려면,
+    - x, y를 public 영역에 선언
+    - `get_x()`, `get_y()` 멤버 함수 제공
+    - `operator+`를 `friend` 함수로 등록
+
+```cpp
+class Point
+{
+	int x{0};
+	int y{0};
+public:
+	Point() = default;
+	Point(int x, int y) : x{x}, y{y} {}
+
+	friend Point operator+(const Point& p1, const Point& p2);
+};
+
+Point operator+(const Point& p1, const Point& p2)
+{
+	Point pt{p1.x + p2.x, p1.y + p2.y};
+	return pt;
+}
+
+int main()
+{
+	Point p1{1, 1};
+	Point p2{2, 2};
+
+	Point p3 = p1 + p2;	// operator+(p1, p2)
+}
+```
+
+2. 멤버 함수로 구현 `p1.operator+(p2)`
+    - `+` 연산자는 이항 연산자이지만, `operator+` 멤버 함수의 인자는 1개임
+    - 상수 객체도 덧셈을 할 수 있어야 하므로, const member function으로 구현
+
+```cpp
+class Point
+{
+	int x{0};
+	int y{0};
+public:
+	Point() = default;
+	Point(int x, int y) : x{x}, y{y} {}
+
+	Point operator+(const Point& p) const
+	{
+		Point pt{p.x + x, p.y + y};
+		return pt;
+	}
+};
+
+int main()
+{
+	const Point p1{1, 1};
+	Point p2{2, 2};
+
+	Point p3 = p1 + p2;	// p1.operator+(p2)
+}
+```
+
+> 멤버 함수와 멤버가 아닌 함수를 모두 제공하면, 컴파일 에러가 발생 (반드시 둘 중 한 개만 제공해야 함)
+
+> private 멤버에 접근하기에는 멤버함수가 좋지만, 첫번째 인자가 사용자 정의 타입이 아닌 경우는 멤버 함수로 반들 수 없음!! ex) `(int).operator+(Point)` 불가
+
+> `+=`의 경우, 자신이 변경되므로, 비상수 함수로 재정의 해야함!
+```cpp
+class Point
+{
+	int x{0};
+	int y{0};
+public:
+	Point() = default;
+	Point(int x, int y) : x{x}, y{y} {}
+
+	// p1 이 상수 객체라도 "p1 + p2" 할수 있어야 한다. 상수 멤버 함수로 작성
+	Point operator+(const Point& p) const
+	{
+		Point pt{p.x + x, p.y + y};
+		return pt;
+	}
+
+	// p1 이 상수 객체라면 "p1 += p2" 는 할 수 없다. "비 상수" 멤버 함수로 작성.
+	Point& operator+=(const Point& p)
+	{	
+		x += p.x;
+		y += p.x;
+		return *this;
+	}
+};
+
+int main()
+{
+	const Point p1{1, 1};
+	Point p2{2, 2};
+
+
+	auto ret = p1 + p2; // ok
+						// p1.operator+(p2)
+
+	p1 += p2;	// p1이 수정되어야 함.
+				// error. 나와야 함
+				// p1.operator+=(p2)
+}
+```
+
+### 3) 연산자 재정의 주의 사항
+1. 인자가 모두 primitive type인 경우는 overloading 할 수 없음 (혼란은 야기하므로,,)
+2. 인자의 개수를 변경할 수 없음
+3. 디폴트 파라미터를 사용할 수 없음
+4. 새로운 연산자를 만들 수 없음
+5. `[]`, `()` `->`, `=` 연산자는 멤버 함수로만 만들 수 있음
+6. `.`, `.*`, `::`, `?:`, `sizeof`, `typeid`, `static_cast`, `dynamic_cast`, `reinterpret_cast`, `const_cast` 는 재정의 할  수 없음
+7. 연산자 우선순위는 변경할 수 없음 (ex, 덧셈 보다 곱셈이 앞서는 것)
+8. `+`와 `=`을 모두 재정의해도, `+=`이 자동 지원되는 것은 아님 (별도로 정의해야함)
