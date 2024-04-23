@@ -197,3 +197,40 @@ Point& operator=(const Point&) = delete;
 
 > `n=10` 의 결과가 다시 n이 나오는 것이 과연 좋을까? `if(n = 10)` 의 널리 알려진 버그 발생 가능성 존재 <br>
 => C++은 자신을 참조로 반환하는 것이 원칙이지만, 요즘 나오는 많은 새로운 언어는 `void` 반환
+
+# 4. Conversion Operator
+- 객체의 유효성을 if문으로 조사할 수 없을까?
+- = 객체가 bool로 변환 가능해야함
+
+### 1) 변환 연산자
+- 객체가 다른 타입으로 변환이 필요할 때 호출되는 함수
+- 반환 타입을 표기 하지 않음 (함수 이름 자체에 반환 타입 포함)
+- 객체의 변환은 의도하지 않은 side effect가 많으므로, 되도록 `explict`를 붙이는 것이 좋음
+- `explicit` 변환 연산자
+    - 직접 초기화와 명시적 변환만 허용
+    - 암시적 변환 허용 안됨
+    - if 조건식 안에서는 사용 가능 (명시적 캐스팅 없이 가능)
+- `nullptr` -> `bool` 반환 : `explicit operator bool()`과 동일하게 동작 
+```cpp
+class TcpConnect
+{
+	int state{0};
+public:
+	void connect() { } 
+
+	operator bool() const 
+	{
+		return state != 0;
+	}	
+};
+
+int main()
+{
+	TcpConnect tcp;
+	tcp.connect();
+
+	if ( tcp ) // tcp.operator bool()
+	{
+	}
+}
+```
